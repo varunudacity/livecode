@@ -245,9 +245,9 @@ def do_compile():
         if platform == 'ios':
             if subplatform is None:
                 error('You must set $BUILD_SUBPLATFORM for iOS builds')
-            target = 'compile-{}-{}'.format(platform, subplatform)
+            target = 'all-{}-{}'.format(platform, subplatform)
         else:
-            target = 'compile-' + platform
+            target = 'all-' + platform
         return exec_make(target)
 
 ################################################################

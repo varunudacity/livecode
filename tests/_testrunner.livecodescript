@@ -120,7 +120,10 @@ private command runTestCommand pInfo, pScriptFile, pCommand
    end repeat
 
    put "invoke" && pScriptFile && pCommand after tCommandLine
-
+   
+   if the platform is "win32" then
+      replace slash with backslash in tCommandLine
+   end if
    -- Invoke the test in a subprocess.  This ensures that we can detect
    -- if a crash occurs
    local tTestOutput, tTestExitStatus

@@ -16,14 +16,15 @@ on doPackage
    end if
    
    local tPackagerFilename
-   put commandArguments(1) into tPackagerFilename
+   put the filename of this stack into tPackagerFilename
 
    put "extensions" & the itemDel & \
       "script-libraries" & the itemDel & \
-	  "extensionpackage" & the itemDel & \
-      "extensionpackage.livecodescript" \
+	  "extension-utils" & the itemDel & \
+      "extension-utils.livecodescript" \
       into item -2 to -1 of tPackagerFilename
 
+   write tPackagerFilename & return to stdout
    start using stack tPackagerFilename
 
    local tSendCmd   

@@ -254,6 +254,8 @@ private function shellFormat pArg, pSwitch
 end shellFormat
 
 command extensionCompile pFile, pSupportFiles, pExtraModulePaths, pTargetFolder, pOutputFilename
+   __EnsurePath pTargetFolder
+   
    # The manifest is currently always generated from the source
    if there is a file (pTargetFolder & slash & "manifest.xml") then
       delete file (pTargetFolder & slash & "manifest.xml")
@@ -281,8 +283,15 @@ command extensionCompile pFile, pSupportFiles, pExtraModulePaths, pTargetFolder,
    put shellFormat(pTargetFolder & slash & pOutputFilename, "output") after tShellCommand
    
    # Support files must be dependency-ordered
-   repeat for each line tSupport in revIDEExtensionsOrderByDependency(pSupportFiles)
-      put shellFormat(pTargetFolder & slash &tSupport) after tShellCommand
+   if pSupportFiles is not empty then
+      extensionDepsOrder pSupportFiles
+      if the result is not empty then
+         return the result for error
+      end if
+      put it into pSupportFiles
+   end if
+   repeat for each line tSupport in pSupportFiles
+      put shellFormat(pTargetFolder & slash & tSupport) after tShellCommand
    end repeat
    
    # The target .lcb file

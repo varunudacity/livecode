@@ -48,14 +48,103 @@
 
 		},
 		{
+			'target_name': 'lcs-check-modules',
+			'type': 'none',
+			
+			'dependencies':
+			[
+				'../toolchain/lc-compile/lc-compile.gyp:lc-compile',
+				'../engine/lcb-modules.gyp:engine_lcb_modules',
+				'../engine/engine.gyp:server',			
+			],
+
+			'actions':
+			[
+				{
+					'action_name': 'compile_modules',
+
+					'inputs':
+					[
+						'test-extensions-utils.lc',
+					],
+
+					'outputs':
+					[
+						# hack because gyp wants an output
+                        'notarealfile.txt',
+					],
+
+					'message': 'Compiling modules for lcs tests',
+
+					'action':
+					[
+						'<(server-engine)',
+						'test-extensions-utils.lc',
+						'$(not_a_real_variable)findandcompile',
+						'lcs'
+					],
+				},
+			],			
+		},		
+		{
+			'target_name': 'lcs-check-extensions-compile',
+			'type': 'none',
+			
+			'dependencies':
+			[
+				'../toolchain/lc-compile/lc-compile.gyp:lc-compile',
+				'../engine/lcb-modules.gyp:engine_lcb_modules',
+				'../engine/engine.gyp:server',
+				'../revzip/revzip.gyp:external-revzip-server',				
+			],
+
+			'actions':
+			[
+				{
+					'action_name': 'build_extensions',
+
+					'inputs':
+					[
+						'test-extensions-utils.lc',
+					],
+
+					'outputs':
+					[
+						# hack because gyp wants an output
+                        'notarealfile.txt',
+					],
+
+					'message': 'Building extensions for lcs tests',
+
+					'action':
+					[
+						'<(server-engine)',
+						'test-extensions-utils.lc',
+						'$(not_a_real_variable)findandbuild',
+						'lcs/extensions',
+												'../ide-support/revdocsparser.livecodescript',
+						'../_tests/_build/packaged_extensions',
+						'$(not_a_real_variable)false',
+						'>(lc-compile_host)',
+						'<(PRODUCT_DIR)/modules/lci',
+					],
+				},
+			],			
+		},
+		{
 			'target_name': 'lcs-check',
 			'type': 'none',
 
 			'dependencies':
 			[
-				'../toolchain/lc-compile/lc-compile.gyp:lc-compile',
 				'../engine/engine.gyp:standalone',
 				'../revzip/revzip.gyp:external-revzip',
+				'../revdb/revdb.gyp:external-revdb',
+				'../revdb/revdb.gyp:dbsqlite',
+				'../thirdparty/libopenssl/libopenssl.gyp:revsecurity',
+				'../extensions/extensions.gyp:extensions',
+				'lcs-check-extensions-compile',
+				'lcs-check-modules',
 			],
 					
 			'actions':

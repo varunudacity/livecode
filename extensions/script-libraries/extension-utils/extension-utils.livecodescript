@@ -41,6 +41,7 @@ end pathDelimiter
 
 local sExternalsA
 private command __EnsureExternal pExternal
+   log "ensuring" && pExternal
    if sExternalsA[pExternal] then
       exit __EnsureExternal
    end if
@@ -79,7 +80,7 @@ private command __EnsureExternal pExternal
          put "so" into tFileExtension
          break
    end switch
-   
+ 
    local tExternalFilename
    if the environment is "server" then
       put "server-" after tExternalFilename
@@ -90,10 +91,13 @@ private command __EnsureExternal pExternal
    if there is a file (tHomeFolder & slash & "externals" & slash & \
       tExternalFilename) then
       put true into sExternalsA[pExternal]
+      log "should be loaded"
 	  exit __EnsureExternal
    end if
    
    put specialFolderPath("engine") & pathDelimiter() before tExternalFilename
+
+   log "loading from" && tExternalFilename
    set the externals of the templateStack to tExternalFilename
    
    create stack pExternal && "External"
@@ -101,6 +105,7 @@ private command __EnsureExternal pExternal
    if the externalCommands of it is empty then
       throw "cannot load external" && pExternal
    else
+      log "added external commands" && the externalCommands of it
       put true into sExternalsA[pExternal]
    end if
 end __EnsureExternal 

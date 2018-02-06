@@ -21,6 +21,7 @@
 			'type': 'none',
 			'dependencies': 
 			[ 
+				'binzip-copy',			
 				'cpptest-run-all', 
 				'tests/tests.gyp:tests-run-all',
 			],

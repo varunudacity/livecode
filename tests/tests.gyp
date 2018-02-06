@@ -35,6 +35,54 @@
         ],
     },
     
+    'conditions':
+    [
+    	[
+			'host_os == "win"',
+			{
+				'targets':
+				[
+					{
+						'target_name': 'make-standalone-console',
+						'type': 'none',			
+					
+						'dependencies':
+						[
+							'../engine/engine.gyp:standalone',
+						],
+					
+						'actions':
+						[
+							{
+								'action_name': 'editbin-standalone',
+
+								'inputs':
+								[
+									'<(PRODUCT_DIR)/standalone-community.exe',
+								],
+
+								'outputs':
+								[
+									# hack because gyp wants an output
+									'notarealfile.txt',
+								],
+
+								'message': 'Making standalone a console application',
+
+								'action':
+								[
+									'EDITBIN.EXE',
+									'/SUBSYSTEM:CONSOLE',
+									'<(standalone-engine)'
+								],
+							},
+						],											
+					},
+				],
+			}, 
+		], 	
+    ],
+    
     'targets':
     [
 		{
@@ -147,6 +195,19 @@
 				'lcs-check-modules',
 			],
 					
+			'conditions':
+			[
+				[
+					'host_os == "win"',
+					{
+						'dependencies':            
+						[
+							'make-standalone-console',
+						],
+					},		
+                ],		
+			],
+			
 			'actions':
 			[
 				{

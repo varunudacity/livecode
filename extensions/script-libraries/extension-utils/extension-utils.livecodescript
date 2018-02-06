@@ -96,6 +96,9 @@ private command __EnsureExternal pExternal
    end if
    
    put specialFolderPath("engine") & pathDelimiter() before tExternalFilename
+   if the platform is "win32" then
+      replace backslash with slash in tExternalFilename
+   end if
 
    log "loading from" && tExternalFilename
    set the externals of the templateStack to tExternalFilename
@@ -255,7 +258,7 @@ end shellFormat
 
 command extensionCompile pFile, pSupportFiles, pExtraModulePaths, pTargetFolder, pOutputFilename
    __EnsurePath pTargetFolder
-   
+   log the params
    # The manifest is currently always generated from the source
    if there is a file (pTargetFolder & slash & "manifest.xml") then
       delete file (pTargetFolder & slash & "manifest.xml")
@@ -356,6 +359,8 @@ command buildPackageAndExtractLCBExtensions pDocsParser, pTargetFolder, \
       pCommercialExtension, pLCCompile, pInterfaceFolder
    # Items 6 onwards in 'the params' are quoted full paths to ext files
    # Construct the list of extensions to build
+   
+   log the params
    local tExtList
    repeat for each item tItem in item 6 to -1 of the params
       appendToStringList tExtList, char 2 to -2 of tItem
@@ -556,8 +561,8 @@ private command packageExtension pExtensionName, pSourceFolder, pSourceFileName,
    
    local tTargetDir, tBuildTarget, tZip
    put pExtensionName into tTargetDir
-   put pTargetFolder & slash & tTargetDir into tBuildTarget
-   put pSourceFolder & slash & tTargetDir & ".lce" into tZip
+   put pTargetFolder & pathDelimiter() & tTargetDir into tBuildTarget
+   put pSourceFolder & pathDelimiter() & tTargetDir & ".lce" into tZip
    
    write "packaging extension" && pSourceFileName && \
          "to" && tZip & return to stdout
@@ -597,7 +602,7 @@ end packageExtension
 private command __EnsurePath pPath
    if there is a folder pPath then exit __EnsurePath
    
-   set the itemdel to slash
+   set the itemdel to pathdelimiter()
    
    local tPathPart
    repeat for each item tPart in pPath
@@ -605,7 +610,7 @@ private command __EnsurePath pPath
       if there is not a folder tPathPart then
          create folder tPathPart
       end if
-      put slash after tPathPart
+      put the itemdel after tPathPart
    end repeat
 end __EnsurePath
 
@@ -613,12 +618,12 @@ private command extractExtension pZip, pSourceFolder, pTargetFolder
    __EnsureExternal "revzip"
    
    local tTargetDir, tBuildTarget, tError, tName
-   set the itemdelimiter to slash
+   set the itemdelimiter to pathdelimiter()
    put item -1 of pZip into tName
    set the itemdelimiter to "."
    put item 1 to -2 of tName into tName
-   
-   put pTargetFolder & slash & tName into tBuildTarget
+   set the itemdelimiter to pathdelimiter()
+   put pTargetFolder & the itemdel & tName into tBuildTarget
    
    write "extracting extension" && pZip && \
          "to" && tBuildTarget & return to stdout
@@ -641,11 +646,10 @@ private command extractExtension pZip, pSourceFolder, pTargetFolder
    
    # Extract all the files
    local tDirectory
-   set the itemdel to slash
    repeat for each line tFile in tZipItems
-      put tBuildTarget & slash & item 1 to -2 of tFile into tDirectory
+      put tBuildTarget & the itemdel & item 1 to -2 of tFile into tDirectory
       __EnsurePath tDirectory
-      revZipExtractItemToFile pZip, tFile, tBuildTarget & slash & tFile
+      revZipExtractItemToFile pZip, tFile, tBuildTarget & the itemdel & tFile
       if the result begins with "ziperr" then
          put the result into tError
       end if

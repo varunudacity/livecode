@@ -1,7 +1,15 @@
 #!
  
 send "doCompile" to me
- 
+
+private function pathdelimiter
+   if the platform is "win32" then
+      return backslash
+   else
+      return slash
+   end if
+end pathdelimiter
+
 on doCompile
    local tArgs
    put the commandArguments into tArgs
@@ -9,11 +17,7 @@ on doCompile
    local tEngine
    put the commandName into tEngine
    
-   if the platform is "win32" then
-      set the itemdelimiter to backslash
-   else
-      set the itemdelimiter to slash
-   end if
+   set the itemdelimiter to pathdelimiter()
    
    local tUtilsFilename 
    put item 1 to -3 of the filename of this stack & the itemdel & \
@@ -32,6 +36,11 @@ on doCompile
    local tFiles
    put GetFileNames(tSourceFolder, "lcb") into tFiles
    
+   if the itemdel is backslash then
+      replace slash with backslash in tSourceFolder
+	  replace slash with backslash in tFiles
+   end if
+   
    local tSendCmd   
    switch tArgs[2]
    case "findandbuild"
@@ -39,7 +48,7 @@ on doCompile
       put "buildPackageAndExtractLCBExtensions" into tSendCmd
       repeat for each line tLine in tFiles
          add 1 to tCount
-         put tSourceFolder & slash & tLine into tArgs[8 + tCount]
+         put tSourceFolder & the itemdel & tLine into tArgs[8 + tCount]
       end repeat
       repeat with x = 4 to the number of elements in tArgs
          put " tArgs[" & x & "]," after tSendCmd
@@ -90,7 +99,7 @@ on doCompile
          end if      
          set the itemdelimiter to "."
          put "lcm" into item -1 of tOutput  
-         set the itemdelimiter to slash
+         set the itemdelimiter to pathdelimiter()
          extensionCompile tFile, "", tLCI, item 1 to -2 of tOutput, \
             item -1 of tOutput
       end repeat

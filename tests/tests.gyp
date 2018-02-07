@@ -230,7 +230,7 @@
 					[
 						'<(standalone-engine)',
 						'<@(_inputs)',
-						'run',
+						'$(not_a_real_variable)run',
 						'lcs',
 					],
 				},

@@ -599,10 +599,12 @@ private command packageExtension pExtensionName, pSourceFolder, pSourceFileName,
    return tZip
 end packageExtension
 
-private command __EnsurePath pPath
+private command __EnsurePath pPath, pDelimiter
    if there is a folder pPath then exit __EnsurePath
-   
-   set the itemdel to pathdelimiter()
+   if pDelimiter is empty then
+      put pathDelimiter() into pDelimiter
+   end if
+   set the itemdel to pDelimiter
    
    local tPathPart
    repeat for each item tPart in pPath
@@ -610,7 +612,7 @@ private command __EnsurePath pPath
       if there is not a folder tPathPart then
          create folder tPathPart
       end if
-      put the itemdel after tPathPart
+      put pDelimiter after tPathPart
    end repeat
 end __EnsurePath
 
@@ -646,9 +648,10 @@ private command extractExtension pZip, pSourceFolder, pTargetFolder
    
    # Extract all the files
    local tDirectory
+   set the itemdel to slash
    repeat for each line tFile in tZipItems
-      put tBuildTarget & the itemdel & item 1 to -2 of tFile into tDirectory
-      __EnsurePath tDirectory
+      put tBuildTarget & slash & item 1 to -2 of tFile into tDirectory
+      __EnsurePath tDirectory, slash
       revZipExtractItemToFile pZip, tFile, tBuildTarget & the itemdel & tFile
       if the result begins with "ziperr" then
          put the result into tError

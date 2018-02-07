@@ -170,7 +170,7 @@
 						'test-extensions-utils.lc',
 						'$(not_a_real_variable)findandbuild',
 						'lcs/extensions',
-						'../ide-support/revdocsparser.livecodescript',
+						'dummy',
 						'../_tests/_build/packaged_extensions',
 						'$(not_a_real_variable)false',
 						'>(lc-compile_host)',

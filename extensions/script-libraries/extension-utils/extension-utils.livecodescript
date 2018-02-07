@@ -437,12 +437,12 @@ command protectStack pProtectifyScript, pSourceFolder, pSourceFileName, pOutput,
 end protectStack
 
 command extractDocs pDocsParser, pOutputDir
-   try
-      start using stack pDocsParser
-   catch tError
-      throw "Error: could not load docs parser:" && pDocsParser & return & tError
-   end try
-   
+   if there is not a stack pDocsParser then
+      exit extractDocs
+   end if
+     
+   start using stack pDocsParser
+
    __EnsurePath pOutputDir
    
    if there is not a folder pOutputDir then

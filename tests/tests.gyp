@@ -92,7 +92,7 @@
 			'dependencies':
 			[
 				'lcs-check',
-				'lcs-server-check',
+				#'lcs-server-check',
 				#'lcb-check',				
 			],
 

@@ -194,7 +194,20 @@
 				'../extensions/extensions.gyp:extensions',
 				'lcs-check-extensions-compile',
 				'check-compile-modules',
-			],			
+			],		
+			
+			'conditions':
+			[
+				[
+					'host_os == "win"',
+					{
+						'dependencies':            
+						[
+							'make-standalone-console',
+						],
+					},		
+                ],		
+			],				
 		},
 		{
 			'target_name': 'lcs-check',

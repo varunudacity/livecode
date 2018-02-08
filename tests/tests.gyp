@@ -91,12 +91,14 @@
 
 			'dependencies':
 			[
-				'lcs-check',				
+				'lcs-check',
+				'lcs-server-check',
+				#'lcb-check',				
 			],
 
-		},
+		},	
 		{
-			'target_name': 'lcs-check-modules',
+			'target_name': 'check-compile-modules',
 			'type': 'none',
 			
 			'dependencies':
@@ -109,7 +111,7 @@
 			'actions':
 			[
 				{
-					'action_name': 'compile_modules',
+					'action_name': 'check-compile-modules',
 
 					'inputs':
 					[
@@ -122,14 +124,14 @@
                         'notarealfile.txt',
 					],
 
-					'message': 'Compiling modules for lcs tests',
+					'message': 'Compiling modules for tests',
 
 					'action':
 					[
 						'<(server-engine)',
 						'test-extensions-utils.lc',
 						'$(not_a_real_variable)findandcompile',
-						'lcs'
+						'../tests',
 					],
 				},
 			],			
@@ -180,32 +182,28 @@
 			],			
 		},
 		{
-			'target_name': 'lcs-check',
+			'target_name': 'lcs-check-deps',
 			'type': 'none',
 
 			'dependencies':
 			[
-				'../engine/engine.gyp:standalone',
 				'../revzip/revzip.gyp:external-revzip',
 				'../revdb/revdb.gyp:external-revdb',
 				'../revdb/revdb.gyp:dbsqlite',
 				'../thirdparty/libopenssl/libopenssl.gyp:revsecurity',
 				'../extensions/extensions.gyp:extensions',
 				'lcs-check-extensions-compile',
-				'lcs-check-modules',
-			],
-					
-			'conditions':
+				'check-compile-modules',
+			],			
+		},
+		{
+			'target_name': 'lcs-check',
+			'type': 'none',
+
+			'dependencies':
 			[
-				[
-					'host_os == "win"',
-					{
-						'dependencies':            
-						[
-							'make-standalone-console',
-						],
-					},		
-                ],		
+				'lcs-check-deps',
+				'../engine/engine.gyp:server',
 			],
 			
 			'actions':
@@ -229,6 +227,43 @@
 					'action':
 					[
 						'<(standalone-engine)',
+						'<@(_inputs)',
+						'$(not_a_real_variable)run',
+						'lcs',
+					],
+				},
+			],
+		},
+		{
+			'target_name': 'lcs-server-check',
+			'type': 'none',
+
+			'dependencies':
+			[
+				'lcs-check-deps',
+			],
+			
+			'actions':
+			[
+				{
+					'action_name': 'lcs_server_check',
+
+					'inputs':
+					[
+						'_testrunner.lc',
+					],
+
+					'outputs':
+					[
+						# hack because gyp wants an output
+                        'notarealfile.txt',
+					],
+
+					'message': 'Testing server engine',
+
+					'action':
+					[
+						'<(server-engine)',
 						'<@(_inputs)',
 						'$(not_a_real_variable)run',
 						'lcs',

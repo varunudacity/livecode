@@ -13,7 +13,8 @@
                 {
                     'server-engine': '<(PRODUCT_DIR)/server-community',
                     'dev-engine': '<(PRODUCT_DIR)/LiveCode-Community',
-                    'standalone-engine': '<(PRODUCT_DIR)/standalone-community',                                        
+                    'standalone-engine': '<(PRODUCT_DIR)/standalone-community',     
+                    'lc-run': '<(PRODUCT_DIR)/lc-run',                             
                 },
             ],
             [
@@ -22,6 +23,7 @@
                     'server-engine': '<(PRODUCT_DIR)/server-community',
                     'dev-engine': '<(PRODUCT_DIR)/LiveCode-Community.app/Contents/MacOS/LiveCode-Community',
                     'standalone-engine': '<(PRODUCT_DIR)/Standalone-Community.app/Contents/MacOS/Standalone-Community',   
+                    'lc-run': '<(PRODUCT_DIR)/lc-run',
                 },
             ],
             [
@@ -30,6 +32,7 @@
                     'server-engine': '<(PRODUCT_DIR)/server-community.exe',
                     'dev-engine': '<(PRODUCT_DIR)/LiveCode-Community.exe',
                     'standalone-engine': '<(PRODUCT_DIR)/standalone-community.exe',   
+                    'lc-run': '<(PRODUCT_DIR)/lc-run.exe',
                 },
             ],
         ],
@@ -132,10 +135,56 @@
 						'test-extensions-utils.lc',
 						'$(not_a_real_variable)findandcompile',
 						'../tests',
+						'../_tests/_build',
 					],
 				},
 			],			
-		},		
+		},	
+		{
+			'target_name': 'lcb-check',
+			'type': 'none',
+
+			'dependencies':
+			[
+				'../engine/engine.gyp:server',
+				'../toolchain/toolchain.gyp:toolchain-all',
+				'check-compile-modules',
+			],
+			
+			'actions':
+			[
+				{
+					'action_name': 'lcb_check',
+
+					'inputs':
+					[
+					    'test-extensions-utils.lc',
+						'_testrunner.lcb',
+						'_testlib.lcb',
+					],
+
+					'outputs':
+					[
+						# hack because gyp wants an output
+                        'notarealfile.txt',
+					],
+
+					'message': 'Testing standalone engine',
+					
+					'action':
+					[
+						'<(server-engine)',
+						'test-extensions-utils.lc',
+						'$(not_a_real_variable)lcruntests',
+						'../tests/lcb', # Must have 'tests' in it
+						'../_tests/_build',
+						'<(lc-run)',
+						'../_tests/_build/_testrunner.lcm',
+						'../_tests/_build/_testlib.lcm',
+					],
+				},
+			],
+		},				
 		{
 			'target_name': 'lcs-check-extensions-compile',
 			'type': 'none',

@@ -1,3 +1,42 @@
+/*
+Copyright (C) 2018 LiveCode Ltd.
+
+This file is part of LiveCode.
+
+LiveCode is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License v3 as published by the Free
+Software Foundation.
+
+LiveCode is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License
+along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
+
+/**
+A tile widget with icon and label
+
+Name: mouseUp
+
+Summary: Sent when the tile is clicked
+
+Type: message
+
+Name: mouseEnter
+
+Summary: Sent when the mouse enters the tile
+
+Type: message
+
+Name: mouseLeave
+
+Summary: Sent when the mouse leaves the tile
+
+Type: message
+*/
+
 widget com.livecode.widget.tile
 
 use com.livecode.canvas
@@ -23,13 +62,44 @@ metadata colorStep.editor is "com.livecode.pi.string"
 metadata colorStep.default is "0"
 
 // Properties
+/**
+The label to display
+*/
 property tileLabel get mTileLabel set setTileLabel
+
+/**
+The name of the icon to display
+*/
 property iconName get mIconName set setIconName
+
+/**
+The name of the icon to display when hovering over the tile
+*/
 property hoverIconName get mHoverIconName set setHoverIconName
+
+/**
+The hover state of the tile
+*/
 property hoverState get mHover set setHover
+
+/**
+The foreground color of the tile
+*/
 property fgColor get mForegroundColor set setForegroundColor
+
+/**
+The foreground hover color of the tile
+*/
 property fgHoverColor get mForegroundHoverColor set setForegroundHoverColor
+
+/**
+The background color of the tile
+*/
 property bgColor get mBackgroundColor set setBackgroundColor
+
+/**
+The background hover color of the tile
+*/
 property bgHoverColor get mBackgroundHoverColor set setBackgroundHoverColor
 
 //Local variables

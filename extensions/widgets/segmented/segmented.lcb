@@ -169,6 +169,18 @@ metadata hilitedTextColor.label is "Hilited segment label color"
 metadata themeClass.default is "list"
 metadata themeClass.user_visible is "false"
 
+/**
+Whether the segmented control is horizontal or not
+
+Syntax: 
+set the horizontal of <widget> to {true | false}
+get the horizontal of <widget>
+
+Description:
+Use the <horizontal> property to control whether the segmented control
+displays horizontally or vertically.
+*/
+
 property horizontal get mIsHorizontal set SetHorizontal
 metadata horizontal.editor is "com.livecode.pi.boolean"
 metadata horizontal.default is "true"

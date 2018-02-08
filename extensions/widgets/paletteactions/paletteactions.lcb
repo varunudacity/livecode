@@ -17,8 +17,40 @@ along with LiveCode.  If not see <http://www.gnu.org/licenses/>.  */
 
 /**
 Palette header bar widget.
-*/
 
+Name: menuPick pPick
+
+Summary: Sent when a menu item is chosen
+
+Parameters:
+pPick: The item picked
+
+Type: message
+
+Name: actionSelected pItemName
+
+Summary: Sent when an action item is clicked
+
+Parameters:
+pItemName: The name of the clicked action item
+
+Type: message
+
+Name: navSelected pItemName
+
+Summary: Sent when a nav item is selected
+
+Parameters:
+pItemName: The name of the selected nav item
+
+Type: message
+
+Name: navChanged
+
+Summary: Sent when the nav items property is changed
+
+Type: message
+*/
 widget com.livecode.widget.paletteactions
 
 use com.livecode.canvas
@@ -33,24 +65,79 @@ metadata version is "1.0.1"
 metadata userVisible is "false"
 metadata _ide is "true"
 
+/**
+The names of the nav items
+*/
 property navNames		get getNavNames			set setNavNames
+
+/**
+The icons of the nav items
+*/
 property navIcons		get getNavIcons			set setNavIcons
+
+/**
+The labels of the nav items
+*/
 property navLabels		get getNavLabels		set setNavLabels
+
+/**
+Whether to show the nav icons or not
+*/
 property showNavIcons	get mShowNavIcons		set setShowNavIcons
+
+/**
+The name of the currently selected nav item
+*/
 property selectedNavItem	get getSelectedNavItem	set setSelectedNavItem
+
+/**
+The color to use for the selected nav item
+*/
 property selectedNavColor	get mSelectedNavColor	set setSelectedNavColor
 
+/**
+The array of navigation data
+*/
 property navData		get getNavData			set setNavData
 
+/**
+The names of the action items
+*/
 property actionNames		get getActionNames		set setActionNames
+
+/**
+The icons of the action items
+*/
 property actionIcons		get getActionIcons		set setActionIcons
+
+/**
+The labels of the action items
+*/
 property actionLabels		get getActionLabels		set setActionLabels
+
+/**
+Whether to show the action icons or not
+*/
 property showActionIcons	get mShowActionIcons	set setShowActionIcons
 
+/**
+The array of action data
+*/
 property actionData		get getActionData		set setActionData
 
+/**
+Whether the widget is a header or footer
+*/
 property isHeader		get mIsHeader			set mIsHeader
+
+/**
+The horizontal extent of the rendered navigation items 
+*/
 property navBarRight	get getNavBarRight
+
+/**
+The minimum width needed to display nav items and action items
+*/
 property minWidth get mMinWidth
 
 private variable mNavData 			as List

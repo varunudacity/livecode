@@ -1,5 +1,5 @@
 ﻿script "com.livecode.library.extension-utils"
-/*
+/**
 Title: Extension Package Handling Utilities
 
 Summary: This library provides handlers for managing livecode extension packages
@@ -261,6 +261,13 @@ end shellFormat
 
 /**
 Compile extension
+
+Parameters:
+pFile:
+pSupportFiles:
+pExtraModulePaths:
+pTargetFolder:
+pOutputFilename:
 */
 command extensionCompile pFile, pSupportFiles, pExtraModulePaths, pTargetFolder, pOutputFilename
    __EnsurePath pTargetFolder
@@ -323,6 +330,9 @@ end extensionCompile
 
 /**
 Use lc-compile to order lcb extensions by dependency
+
+Parameters:
+pExtensionList:
 */
 command extensionsDepsOrder pExtensionList
    # Build the shell command
@@ -366,6 +376,13 @@ end appendToStringList
 
 /**
 Build, package and extract lcb extensions
+
+Parameters:
+pDocsParser:
+pTargetFolder:
+pCommercialExtension:
+pLCCompile:
+pInterfaceFolder:
 */
 command buildPackageAndExtractLCBExtensions pDocsParser, pTargetFolder, \
       pCommercialExtension, pLCCompile, pInterfaceFolder
@@ -400,6 +417,18 @@ end buildPackageAndExtractLCBExtensions
 
 /**
 Build, package and extract extension
+
+Parameters:
+pProtectifyScript:
+pProtectifyOutput:
+pGitHash:
+pDocsParser:
+pSourceFolder:
+pSourceFileName:
+pTargetFolder:
+pCommercialExtension:
+pLCCompile:
+pInterfaceFolder:
 */
 command buildPackageAndExtractExtension pProtectifyScript, \
       pProtectifyOutput, pGitHash, pDocsParser, \
@@ -437,6 +466,13 @@ end q
 
 /**
 Protect stack
+
+Parameters:
+pProtectifyScript:
+pSourceFolder:
+pSourceFileName:
+pOutput:
+pGitHash:
 */
 command protectStack pProtectifyScript, pSourceFolder, pSourceFileName, pOutput, pGitHash
    if there is not a stack pProtectifyScript then
@@ -454,6 +490,10 @@ end protectStack
 
 /**
 Extract docs
+
+Parameters:
+pDocsParser:
+pOutputDir:
 */
 command extractDocs pDocsParser, pOutputDir
    if there is not a stack pDocsParser then
@@ -691,6 +731,12 @@ end extractExtension
 
 /**
 Package script extension
+
+Parameters:
+pSourceFolder:
+pSourceFileName:
+pTargetFolder:
+pRemoveSource:
 */
 command packageScriptExtension pSourceFolder, pSourceFileName, pTargetFolder, pRemoveSource   
    local tExtShortName
@@ -713,6 +759,14 @@ end getSupportFiles
 
 /**
 Package builder extension
+
+Parameters:
+pSourceFolder:
+pSourceFileName:
+pTargetFolder:
+pRemoveSource:
+pLCCompile:
+pInterfaceFolder:
 */
 command packageBuilderExtension pSourceFolder, pSourceFileName, pTargetFolder, pRemoveSource, pLCCompile, pInterfaceFolder
    write "compiling" && pSourceFolder & return to stdout
@@ -785,6 +839,10 @@ end addXML
 
 /**
 Generate manifest for LCS extension
+
+Parameters:
+pDocsParser:
+pSourceFolder:
 */
 command extensionGenerateManifestForLCSExtension pDocsParser, pSourceFolder
    # Get library metadata from the docs, in lieu of a manifest
@@ -840,6 +898,9 @@ end __SetMetadata
 
 /**
 Fetch metadata for extension
+
+Parameters:
+pManifestPath:
 */
 function extensionFetchMetadata pManifestPath
    local tDataA

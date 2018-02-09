@@ -20,8 +20,8 @@
 			'target_name': 'check',
 			'type': 'none',
 			'dependencies': 
-			[ 
-				'binzip-copy',			
+			[ 		
+			    'LiveCode-all'
 				'cpptest-run-all', 
 				'tests/tests.gyp:tests-run-all',
 			],

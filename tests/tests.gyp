@@ -94,7 +94,6 @@
 
 			'dependencies':
 			[
-			    '../livecode.gyp:LiveCode-all'
 				'lcs-check',
 				#'lcs-server-check',
 				#'lcb-check',				
@@ -104,6 +103,13 @@
 		{
 			'target_name': 'check-compile-modules',
 			'type': 'none',
+			
+			'dependencies':
+			[
+				'../toolchain/lc-compile/lc-compile.gyp:lc-compile',
+				'../engine/lcb-modules.gyp:engine_lcb_modules',
+				'../engine/engine.gyp:server',			
+			],
 
 			'actions':
 			[
@@ -140,6 +146,8 @@
 
 			'dependencies':
 			[
+				'../engine/engine.gyp:server',
+				'../toolchain/toolchain.gyp:toolchain-all',
 				'check-compile-modules',
 			],
 			
@@ -180,6 +188,14 @@
 		{
 			'target_name': 'lcs-check-extensions-compile',
 			'type': 'none',
+			
+			'dependencies':
+			[
+				'../toolchain/lc-compile/lc-compile.gyp:lc-compile',
+				'../engine/lcb-modules.gyp:engine_lcb_modules',
+				'../engine/engine.gyp:server',
+				'../revzip/revzip.gyp:external-revzip-server',				
+			],
 
 			'actions':
 			[
@@ -220,6 +236,11 @@
 
 			'dependencies':
 			[
+				'../revzip/revzip.gyp:external-revzip',
+				'../revdb/revdb.gyp:external-revdb',
+				'../revdb/revdb.gyp:dbsqlite',
+				'../thirdparty/libopenssl/libopenssl.gyp:revsecurity',
+				'../extensions/extensions.gyp:extensions',
 				'lcs-check-extensions-compile',
 				'check-compile-modules',
 			],		
@@ -282,6 +303,10 @@
 			'dependencies':
 			[
 				'lcs-check-deps',
+				'../revzip/revzip.gyp:external-revzip-server',
+				'../revdb/revdb.gyp:external-revdb-server',
+				'../revdb/revdb.gyp:dbsqlite-server',
+				'../thirdparty/libopenssl/libopenssl.gyp:revsecurity',				
 			],
 			
 			'actions':

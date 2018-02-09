@@ -21,7 +21,6 @@
 			'type': 'none',
 			'dependencies': 
 			[ 		
-			    'LiveCode-all'
 				'cpptest-run-all', 
 				'tests/tests.gyp:tests-run-all',
 			],

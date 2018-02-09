@@ -1,12 +1,34 @@
 ﻿script "com.livecode.library.extension-utils"
+/*
+Copyright (C) 2018 LiveCode Ltd.
+
+This file is part of LiveCode.
+
+LiveCode is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License v3 as published by the Free
+Software Foundation.
+
+LiveCode is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License
+along with LiveCode.  If not see <http://www.gnu.org/licenses/>. 
+*/
+
 /**
 Title: Extension Package Handling Utilities
+
+Type: library
 
 Summary: This library provides handlers for managing livecode extension packages
 
 Version: 1.0.0
 */
 
+/**
+*/
 on extensionInitialize
    if the target is not me then
       pass extensionInitialize
@@ -206,6 +228,11 @@ end __extensionIsBuiltin
 
 /**
 Order extensions by dependency using requires info
+
+Parameters:
+pExtensions:
+pRequiresA:
+pIncludeBuiltin:
 */
 function extensionsOrderByDependency pExtensions, pRequiresA, \
    pIncludeBuiltin

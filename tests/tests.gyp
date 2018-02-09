@@ -265,7 +265,7 @@
 			'dependencies':
 			[
 				'lcs-check-deps',
-				'../engine/engine.gyp:server',
+				'../engine/engine.gyp:standalone',
 			],
 			
 			'actions':

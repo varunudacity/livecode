@@ -95,8 +95,21 @@
 			'dependencies':
 			[
 				'lcs-check',
-				#'lcs-server-check',
-				#'lcb-check',				
+				#'lcs-server-check',				
+			],
+			
+			'conditions':
+			[
+				# We can't run lcb tests on Windows yet, until we write
+				# an LCS test runner for them, or we can call the system
+				# function from LCB on windows.
+                'host_os != "win"',
+                {	
+					'dependencies':
+					[                		
+						#'lcb-check',
+					],
+				},
 			],
 
 		},	

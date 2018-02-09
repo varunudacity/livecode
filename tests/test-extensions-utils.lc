@@ -59,6 +59,12 @@ private function compiledModuleMap pSourceFolder, pTarget, pFiles
   return tListA
 end compiledModuleMap
 
+private function __PathToRepo
+   set the itemdelimiter to pathdelimiter()
+   
+   return item 1 to -3 of the filename of this stack
+end __PathToRepo
+
 on doCompile
    local tArgs
    put the commandArguments into tArgs
@@ -69,7 +75,7 @@ on doCompile
    set the itemdelimiter to pathdelimiter()
    
    local tUtilsFilename 
-   put item 1 to -3 of the filename of this stack & the itemdel & \
+   put __PathToRepo() & the itemdel & \
       "extensions" & the itemDel & "script-libraries" & the itemdel & \ 
       "extension-utils" & the itemDel & \
       "extension-utils.livecodescript" into tUtilsFilename
@@ -126,6 +132,14 @@ on doCompile
       end repeat
       quit 0
    case "lcruntests"
+      local tTestLib, tJavaHome
+      put __PathToRepo() & the itemdel & "tests" & the itemdel & \
+         "_testlib.livecodescript" into tTestLib
+      dispatch function "TestGetJavaHome" to stack tTestLib
+      if it is "handled" then
+         put the result into $JAVA_HOME
+      end if
+   
       put absoluteFilePaths(tFiles, tSourceFolder) into tFiles
       
       local tShellCmd, tResult, tRunFlags
@@ -140,15 +154,17 @@ on doCompile
 	  put " --lc-run " after tShellCmd
 	  put q(tArgs[5] & tRunFlags) after tShellCmd
 
-      local tShellOutput, tLogFilesA
+      local tShellOutput, tLogFilesA, tTestShell
       set the itemdelimiter to "."
       repeat for each element tElement in \
          compiledModuleMap(tSourceFolder, tArgs[4], tFiles)
-         put shell(tShellCmd && tElement["target"]) into tShellOutput
+         put tShellCmd && tElement["target"] into tTestShell
+         put shell(tTestShell) into tShellOutput
 
          put "log" into item -1 of tElement["target"]
          addToList tLogFilesA, the folder & slash & tElement["target"]
          put tShellOutput into url("binfile:" & tElement["target"])
+         write tShellOutput & return to stdout
       end repeat
 
 	  -- Summarize tests

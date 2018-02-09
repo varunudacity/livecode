@@ -443,13 +443,13 @@ on TestLoadExternal pExternal
       case "Win32"
          put "dll" into tExtension
          break
-   end if
-
+   end switch
+   
    put TestGetBinariesPath() into tBinariesPath
-
+   
    set the externals of the templateStack to tBinariesPath & \
-      pathDelimiter() & pExternal & "." & tExtension
-
+         pathDelimiter() & pExternal & "." & tExtension
+   
    create stack pExternal && "External"
    start using it
    if the externalCommands of it is empty then

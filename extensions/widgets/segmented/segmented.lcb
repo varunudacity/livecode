@@ -41,7 +41,7 @@ References: itemLabels (property), itemIcons (property),
 
 Name: hiliteChanged
 Type: message
-Syntax: on hiliteChanged
+Syntax: hiliteChanged
 
 Summary: Sent when the hilite of the segmented control widget changes
 

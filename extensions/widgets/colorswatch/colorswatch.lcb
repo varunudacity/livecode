@@ -22,6 +22,8 @@ Name: mouseUp
 
 Summary: Sent when the color swatch is clicked
 
+Syntax: mouseUp
+
 Type: message
 
 */

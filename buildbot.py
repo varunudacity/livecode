@@ -54,8 +54,9 @@ BUILDBOT_PLATFORM_TRIPLES = (
     'js-emscripten-sdk1.35',
 )
 # The set of build tasks that this branch supports
-BUILDBOT_TARGETS = ('fetch', 'config', 'compile', 'bin-archive', 'bin-extract',
-    'dist-notes', 'dist-docs', 'dist-server', 'dist-tools', 'dist-upload',
+BUILDBOT_TARGETS = ('fetch', 'config', 'compile', 'check',
+    'bin-archive', 'bin-extract', 'dist-notes', 'dist-docs',
+    'dist-server', 'dist-tools', 'dist-upload',
     'distmac-archive', 'distmac-extract', 'distmac-disk')
 
 SKIP_EXIT_STATUS = 88
@@ -245,10 +246,27 @@ def do_compile():
         if platform == 'ios':
             if subplatform is None:
                 error('You must set $BUILD_SUBPLATFORM for iOS builds')
-            target = 'all-{}-{}'.format(platform, subplatform)
+            target = 'compile-{}-{}'.format(platform, subplatform)
         else:
-            target = 'all-' + platform
+            target = 'compile-' + platform
         return exec_make(target)
+        
+def do_check():
+    check_target_triple()
+
+    platform, subplatform = get_build_platform()
+    if platform.startswith('win-'):
+        // TODO: Build a check solution on win
+        return exec_msbuild(platform)
+    else:
+        # Just defer to the top level Makefile
+        if platform == 'ios':
+            if subplatform is None:
+                error('You must set $BUILD_SUBPLATFORM for iOS builds')
+            target = 'check-{}-{}'.format(platform, subplatform)
+        else:
+            target = 'check-' + platform
+        return exec_make(target)        
 
 ################################################################
 # Archive / extract built binaries
@@ -275,6 +293,8 @@ def buildbot_task(target):
         return do_configure()
     elif target == 'compile':
         return do_compile()
+    elif target == 'check':
+        return do_check()        
     elif target == 'bin-archive':
         return do_bin_archive()
     else:

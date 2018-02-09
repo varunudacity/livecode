@@ -146,6 +146,14 @@ private command doRun pInfo
    end if
 end doRun
 
+private function pathDelimiter
+   if the platform is "win32" then
+      return backslash
+   else
+      return slash
+   end if
+end pathDelimiter
+
 private command doUsage pStatus
    dispatch "TestRunnerImpl_DoUsage" to me with pStatus
 end doUsage
@@ -154,7 +162,7 @@ private function getStackFolder
    local tFilename
    put the effective filename of this me into tFilename
    
-   set the itemDelimiter to slash
+   set the itemDelimiter to pathDelimiter()
    return item 1 to -2 of tFilename
 end getStackFolder
 
@@ -162,7 +170,7 @@ private command TestRunnerLoadLibraries pLibraries
    local tLibrary, tStackName, tStackFile
    repeat for each item tLibrary in pLibraries
       -- Compute the filename of the library stack and load it
-      put getStackFolder() & slash & tLibrary & ".livecodescript" into tStackFile
+      put getStackFolder() & pathDelimiter() & tLibrary & ".livecodescript" into tStackFile
       put the name of stack tStackFile into tStackName
       
       send "revLoadLibrary" to stack tStackname

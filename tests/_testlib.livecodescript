@@ -124,9 +124,9 @@ private function _TestGetBuildFolder
    put TestGetEngineRepositoryPath() into tRepoPath
 
    # Find the built extensions folder
-   set the itemdelimiter to slash
+   set the itemdelimiter to pathDelimiter()
    repeat while tPath is not tRepoPath and tPath is not empty
-      if there is a folder (tPath & slash & "packaged_extensions") then
+      if there is a folder (tPath & the itemDel & "packaged_extensions") then
          return tPath
       end if
       delete item -1 of tPath
@@ -407,6 +407,14 @@ on TestLoadExtension pName
 
 end TestLoadExtension
 
+private function pathDelimiter
+   if the platform is "win32" then
+      return backslash
+   else
+      return slash
+   end if
+end pathDelimiter
+
 function TestGetBinariesPath
    local tEngineFolder
    put specialfolderpath("engine") into tEngineFolder
@@ -425,16 +433,22 @@ on TestLoadExternal pExternal
 
    local tBinariesPath, tExtension
    set the itemdelimiter to slash
-   if the platform is "MacOS" then
-      put "bundle" into tExtension
-   else if the platform is "linux" then
-      put "so" into tExtension
+   switch the platform 
+      case "MacOS"
+         put "bundle" into tExtension
+         break
+      case "Linux"
+         put "so" into tExtension
+         break
+      case "Win32"
+         put "dll" into tExtension
+         break
    end if
 
    put TestGetBinariesPath() into tBinariesPath
 
-   set the externals of the templateStack to tBinariesPath & slash & \
-      pExternal & "." & tExtension
+   set the externals of the templateStack to tBinariesPath & \
+      pathDelimiter() & pExternal & "." & tExtension
 
    create stack pExternal && "External"
    start using it
@@ -598,7 +612,7 @@ end TestRepeat
 on TestRunStack pOptions, pStackFilePath
 	local tEnginePath
 	set the itemDelimiter to ":"
-	put item 2 of the address into tEnginePath
+	put item 2 to -1 of the address into tEnginePath
 
 	local tCommand
 	put format("\"%s\" %s \"%s\"", tEnginePath, pOptions, pStackFilePath) into tCommand

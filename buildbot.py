@@ -256,7 +256,7 @@ def do_check():
 
     platform, subplatform = get_build_platform()
     if platform.startswith('win-'):
-        // TODO: Build a check solution on win
+        # TODO: Build a check solution on win
         return exec_msbuild(platform)
     else:
         # Just defer to the top level Makefile

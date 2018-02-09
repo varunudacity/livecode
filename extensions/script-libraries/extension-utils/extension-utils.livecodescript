@@ -204,6 +204,9 @@ private function __extensionIsBuiltin pID
    end switch
 end __extensionIsBuiltin
 
+/**
+Order extensions by dependency using requires info
+*/
 function extensionsOrderByDependency pExtensions, pRequiresA, \
    pIncludeBuiltin
    # Accumulate an array of dependencies
@@ -256,6 +259,9 @@ private function shellFormat pArg, pSwitch
    return tOutput & q(pArg) & " "
 end shellFormat
 
+/**
+Compile extension
+*/
 command extensionCompile pFile, pSupportFiles, pExtraModulePaths, pTargetFolder, pOutputFilename
    __EnsurePath pTargetFolder
    log the params
@@ -315,6 +321,9 @@ command extensionCompile pFile, pSupportFiles, pExtraModulePaths, pTargetFolder,
    return tShellOutput for error
 end extensionCompile
 
+/**
+Use lc-compile to order lcb extensions by dependency
+*/
 command extensionsDepsOrder pExtensionList
    # Build the shell command
    local tShellCommand
@@ -355,6 +364,9 @@ private command appendToStringList @xList, pValue
    end if
 end appendToStringList
 
+/**
+Build, package and extract lcb extensions
+*/
 command buildPackageAndExtractLCBExtensions pDocsParser, pTargetFolder, \
       pCommercialExtension, pLCCompile, pInterfaceFolder
    # Items 6 onwards in 'the params' are quoted full paths to ext files
@@ -386,12 +398,13 @@ command buildPackageAndExtractLCBExtensions pDocsParser, pTargetFolder, \
    end repeat
 end buildPackageAndExtractLCBExtensions
 
+/**
+Build, package and extract extension
+*/
 command buildPackageAndExtractExtension pProtectifyScript, \
       pProtectifyOutput, pGitHash, pDocsParser, \
       pSourceFolder, pSourceFileName, pTargetFolder, \
       pCommercialExtension, pLCCompile, pInterfaceFolder
-   
-   log "HERE ALSO"
    
    if pCommercialExtension is true and \
          not (pSourceFileName ends with ".lcb") then
@@ -422,6 +435,9 @@ private function q pParam
    return quote & pParam & quote
 end q
 
+/**
+Protect stack
+*/
 command protectStack pProtectifyScript, pSourceFolder, pSourceFileName, pOutput, pGitHash
    if there is not a stack pProtectifyScript then
       throw "Error: could not load script protector:" && pProtectifyScript
@@ -436,6 +452,9 @@ command protectStack pProtectifyScript, pSourceFolder, pSourceFileName, pOutput,
    end try
 end protectStack
 
+/**
+Extract docs
+*/
 command extractDocs pDocsParser, pOutputDir
    if there is not a stack pDocsParser then
       exit extractDocs
@@ -670,6 +689,9 @@ private command extractExtension pZip, pSourceFolder, pTargetFolder
    end if
 end extractExtension
 
+/**
+Package script extension
+*/
 command packageScriptExtension pSourceFolder, pSourceFileName, pTargetFolder, pRemoveSource   
    local tExtShortName
    set the itemdelimiter to "."
@@ -689,6 +711,9 @@ private function getSupportFiles pSourceFolder, pSourceFileName, pExtension
    return tSupportFiles
 end getSupportFiles
 
+/**
+Package builder extension
+*/
 command packageBuilderExtension pSourceFolder, pSourceFileName, pTargetFolder, pRemoveSource, pLCCompile, pInterfaceFolder
    write "compiling" && pSourceFolder & return to stdout
    local tCompileShell
@@ -758,6 +783,9 @@ private command addXML @xXML, pDepth, pTag, pContent, pAttributesA
    put return after xXML
 end addXML
 
+/**
+Generate manifest for LCS extension
+*/
 command extensionGenerateManifestForLCSExtension pDocsParser, pSourceFolder
    # Get library metadata from the docs, in lieu of a manifest
    local tDocA, tDataA
@@ -805,12 +833,14 @@ command extensionGenerateManifestForLCSExtension pDocsParser, pSourceFolder
    put textEncode(tXML, "utf-8") into url("binfile:" & pSourceFolder & slash & "manifest.xml")
 end extensionGenerateManifestForLCSExtension
 
-
 private command __SetMetadata pKey, pValue, @xArray
    split pKey by "."
    put pValue into xArray[pKey]
 end __SetMetadata
 
+/**
+Fetch metadata for extension
+*/
 function extensionFetchMetadata pManifestPath
    local tDataA
    

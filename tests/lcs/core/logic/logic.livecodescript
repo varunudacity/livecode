@@ -55,7 +55,7 @@ end IsMacDesktop
 private command __checkVariableType pVariable, pType, pSkip, pReason
    repeat for each item tType in kIsA_types
       if tType is among the items of pSkip then
-         TestSkip merge("'Variable containing '[[pVariable]]' is a [[tType]]")), pReason
+         TestSkip merge("'Variable containing '[[pVariable]]' is a [[tType]]"), pReason
          next repeat
       end if
       if tType is among the items of pType then

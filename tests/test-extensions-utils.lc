@@ -2,21 +2,13 @@
  
 send "doCompile" to me
 
-private function pathdelimiter
-   if the platform is "win32" then
-      return backslash
-   else
-      return slash
-   end if
-end pathdelimiter
-
 function q pParam
    return quote & pParam & quote
 end q
 
 private function absoluteFilePaths pFiles, pSourceFolder
   local tPrefix, tPrefixBuild
-  put pSourceFolder & pathDelimiter() into tPrefix
+  put pSourceFolder & slash into tPrefix
 
   split pFiles by return
   combine pFiles with (return & tPrefix)
@@ -24,12 +16,19 @@ private function absoluteFilePaths pFiles, pSourceFolder
   return pFiles
 end absoluteFilePaths
 
+private function pathFromNative pPath
+   if the platform is "win32" then
+      replace backslash with slash in pPath
+   end if
+   return pPath
+end pathFromNative
+
 private command addToList @xList, pValue
    put pValue into xList[the number of elements in xList + 1]
 end addToList
 
 private function compiledModuleMap pSourceFolder, pTarget, pFiles
-  set the itemdelimiter to pathDelimiter()
+  set the itemdelimiter to slash
   
   -- Figure out how to modify the path to put it in the tests build
   -- folder
@@ -44,7 +43,7 @@ private function compiledModuleMap pSourceFolder, pTarget, pFiles
 		
   local tMapA, tListA
   repeat for each line tFile in pFiles
-     set the itemdelimiter to pathDelimiter()
+     set the itemdelimiter to slash
      put tFile into tMapA["source"]    
 	 if tTestsItem is not empty then
 		put pTarget into item 1 to tTestsItem of tFile
@@ -60,10 +59,21 @@ private function compiledModuleMap pSourceFolder, pTarget, pFiles
 end compiledModuleMap
 
 private function __PathToRepo
-   set the itemdelimiter to pathdelimiter()
+   set the itemdelimiter to slash
    
-   return item 1 to -3 of the filename of this stack
+   return item 1 to -3 of pathFromNative(the filename of me)
 end __PathToRepo
+
+private command doShell pShellCmd, @rResult, @rOutput
+   local tOldHide
+   put the hideConsoleWindows into tOldHide
+   set the hideConsoleWindows to true
+
+   put shell(pShellCmd) into rOutput
+   put the result into rResult
+   
+   set the hideConsoleWindows to tOldHide
+end doShell
 
 on doCompile
    local tArgs
@@ -72,12 +82,12 @@ on doCompile
    local tEngine
    put the commandName into tEngine
    
-   set the itemdelimiter to pathdelimiter()
+   set the itemdelimiter to slash
    
    local tUtilsFilename 
-   put __PathToRepo() & the itemdel & \
-      "extensions" & the itemDel & "script-libraries" & the itemdel & \ 
-      "extension-utils" & the itemDel & \
+   put __PathToRepo() & slash & \
+      "extensions" & slash & "script-libraries" & slash & \ 
+      "extension-utils" & slash & \
       "extension-utils.livecodescript" into tUtilsFilename
 
    write tUtilsFilename & return to stdout
@@ -86,15 +96,10 @@ on doCompile
    
    -- All uses currently find lcb sources in a source folder
    local tSourceFolder
-   put tArgs[3] into tSourceFolder
-
+   put pathFromNative(tArgs[3]) into tSourceFolder
+   
    local tFiles
    put GetFileNames(tSourceFolder, "lcb") into tFiles
-   
-   if the itemdel is backslash then
-      replace slash with backslash in tSourceFolder
-	  replace slash with backslash in tFiles
-   end if
    
    local tSendCmd   
    switch tArgs[2]
@@ -103,7 +108,7 @@ on doCompile
       put "buildPackageAndExtractLCBExtensions" into tSendCmd
       repeat for each line tLine in tFiles
          add 1 to tCount
-         put tSourceFolder & the itemdel & tLine into tArgs[8 + tCount]
+         put tSourceFolder & slash & tLine into tArgs[8 + tCount]
       end repeat
       repeat with x = 4 to the number of elements in tArgs
          put " tArgs[" & x & "]," after tSendCmd
@@ -122,10 +127,10 @@ on doCompile
       put it into tFiles
 
       local tLCI
-      put tArgs[4] & the itemdel & "lci" into tLCI
+      put pathFromNative(tArgs[4]) & slash & "lci" into tLCI
          
       repeat for each element tElement in \
-         compiledModuleMap(tSourceFolder, tArgs[4], tFiles) 
+         compiledModuleMap(tSourceFolder, pathFromNative(tArgs[4]), tFiles) 
          extensionCompile tElement["source"], "", tLCI, \
             item 1 to -2 of tElement["target"], \
             item -1 of tElement["target"]
@@ -133,7 +138,7 @@ on doCompile
       quit 0
    case "lcruntests"
       local tTestLib, tJavaHome
-      put __PathToRepo() & the itemdel & "tests" & the itemdel & \
+      put __PathToRepo() & slash & "tests" & slash & \
          "_testlib.livecodescript" into tTestLib
       dispatch function "TestGetJavaHome" to stack tTestLib
       if it is "handled" then
@@ -154,12 +159,12 @@ on doCompile
 	  put " --lc-run " after tShellCmd
 	  put q(tArgs[5] & tRunFlags) after tShellCmd
 
-      local tShellOutput, tLogFilesA, tTestShell
+      local tShellResult, tShellOutput, tLogFilesA, tTestShell
       set the itemdelimiter to "."
       repeat for each element tElement in \
-         compiledModuleMap(tSourceFolder, tArgs[4], tFiles)
+         compiledModuleMap(tSourceFolder, pathFromNative(tArgs[4]), tFiles)
          put tShellCmd && tElement["target"] into tTestShell
-         put shell(tTestShell) into tShellOutput
+         doShell tTestShell, tShellResult, tShellOutput
 
          put "log" into item -1 of tElement["target"]
          addToList tLogFilesA, the folder & slash & tElement["target"]
@@ -180,11 +185,10 @@ on doCompile
 	     put " " & tElement after tShellCmd
 	  end repeat
 
-	  put shell(tShellCmd) into tShellOutput
-	  put the result into tResult
+      doShell tShellCmd, tShellResult, tShellOutput
 	  write tShellOutput to stdout
-	  if tResult is not empty then
-	     quit tResult
+	  if tShellResult is not empty then
+	     quit tShellResult
 	  end if
 	  quit 0
    default

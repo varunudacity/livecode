@@ -28,7 +28,7 @@ use com.livecode.library.iconsvg
 use com.livecode.library.widgetutils
 
 metadata author is "LiveCode"
-metadata version is "1.0.0"
+metadata version is "1.0.3"
 metadata title is "Icon Picker"
 metadata userVisible is "false"
 
@@ -48,6 +48,7 @@ private variable mViewWidth as Real
 private variable mDataTravel as Real
 private variable mViewTopPosition as Real
 private variable mFirstDataItem as Integer
+private variable mLastDataItem as Integer
 private variable mRecalculate as Boolean
 private variable mRecalculateGeometry as Boolean
 private variable mHoverRow as Integer
@@ -58,6 +59,7 @@ private variable mSelectedElement as optional String
 private variable mShowNames as Boolean
 private variable mIconSize as Number
 private variable mFilterString as String
+private variable mShowSelectedElement as Boolean
 
 property preferredSize		get getPreferredSize
 metadata preferredSize.user_visible is "false"
@@ -67,6 +69,7 @@ property showFrameBorder	get mFrameBorder	set setFrameBorder
 property showNames get mShowNames set SetShowNames
 property iconSize get mIconSize set SetIconSize
 property filterString get mFilterString set SetFilterString
+property showSelectedElement get mShowSelectedElement set setShowSelectedElement
 
 constant kIconColor is [0,0,0]
 
@@ -76,13 +79,13 @@ constant kMinCols is 3
 constant kMinRows is 3
 
 public handler OnCreate()
-    put "" into mFilterString
+   put "" into mFilterString
 	SetDataList()
 	put the empty array into mPaths
 	put 1 into mFirstDataItem
 	put true into mRecalculateGeometry
 	put false into mRecalculate
-	
+
 	put 0 into mHoverRow
 	put 0 into mViewTopPosition
 	put true into mFrameBorder
@@ -109,19 +112,20 @@ end handler
 handler SetDataList()
     variable tDataList as List
     put iconList() into tDataList
-    
+
     variable tFilteredData as List
     if mFilterString is not empty then
         variable tElement as String
         repeat for each element tElement in tDataList
             if tElement contains mFilterString then
                 push tElement onto tFilteredData
-            end if  
+            end if
         end repeat
     else
         put tDataList into tFilteredData
     end if
-    
+
+	 put the number of elements in tFilteredData into mLastDataItem
     put tFilteredData into mDataList
     put true into mRecalculate
     redraw all
@@ -141,7 +145,7 @@ public handler OnPaint()
 		set the paint of this canvas to getPaint("background","popup")
 		fill rectangle path of my bounds on this canvas
 	end if
-	
+
 	// Draw the icons
 	variable tIcon as Integer
 	if mNumRows > 0 and mNumCols > 0 then
@@ -152,10 +156,12 @@ public handler OnPaint()
 			drawIcon(tIcon)
 		end repeat
 	end if
-	
+
 	paintScrollbar(this canvas, getPaint("scrollbar", "fill"))
-	
-	drawTitleBar()
+
+   if mShowSelectedElement is true then
+	   drawTitleBar()
+   end if
 	drawFrame()
 
 end handler
@@ -179,7 +185,7 @@ private handler drawTitleBar()
 	put line path from point [0.5,tTopRowHeight] to point [my width-0.5, tTopRowHeight] into tPath
 	set the paint of this canvas to getPaint("frame","stroke")
 	stroke tPath on this canvas
-	
+
 	// Draw the selected text and icon
 	variable tTextRect as Rectangle
 	set the paint of this canvas to solid paint with color kIconColor
@@ -304,6 +310,8 @@ public handler OnMouseUp() returns nothing
    end if
 
    redraw all
+
+	post "mouseUp"
 end handler
 
 public handler OnMouseCancel() returns nothing
@@ -343,7 +351,9 @@ private handler indexToSectorRect(in pIndex as Integer) returns Rectangle
 
 	variable tRow as Integer
 	variable tCol as Integer
-	put the floor of ((pIndex - 1) / mNumCols) + 1 into tRow
+
+	put the ceiling of (pIndex / mNumCols) into tRow
+
 	put pIndex wrap mNumCols into tCol
 
 	put (tCol - 1) * mViewWidth / mNumCols into tLeft
@@ -368,6 +378,11 @@ private handler mousePosToIconNumber(in pMouse as Point) returns Integer
    if tNumber < mFirstDataItem then
       put 0 into tNumber
    end if
+
+	-- Ignore clicks after the last icon
+	if tNumber > mLastDataItem then
+		put 0 into tNumber
+	end if
 
 	return tNumber
 end handler
@@ -399,7 +414,11 @@ private handler updateFirstDataItem()
 end handler
 
 private handler topRowHeight() returns Number
-	return mIconSize * (1 + kIconPaddingRatio * 2)
+   if mShowSelectedElement is true then
+	   return mIconSize * (1 + kIconPaddingRatio * 2)
+   else
+      return 0
+   end if
 end handler
 
 private handler minContentHeight() returns Number
@@ -587,7 +606,15 @@ end handler
 
 private handler SetFilterString(in pString as String)
     put pString into mFilterString
+	 put 1 into mFirstDataItem
+	 put true into mRecalculateGeometry
+
     SetDataList()
+    redraw all
+end handler
+
+private handler SetShowSelectedElement(in pShow as Boolean)
+    put pShow into mShowSelectedElement
     redraw all
 end handler
 
